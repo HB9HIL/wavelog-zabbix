@@ -1,0 +1,75 @@
+zabbix_export:
+  version: '7.4'
+  template_groups:
+    - uuid: a571c0d144b14fd4a87a9d9b2aa9fcd6
+      name: Templates/Applications
+  templates:
+    - uuid: 15fbb1064de8404fa26949ef82af9aa7
+      template: 'Wavelog by Zabbix agent'
+      name: 'Wavelog by Zabbix agent'
+      description: |
+        Template to monitor a Wavelog Instance
+        prepared by HB9HIL
+      groups:
+        - name: Templates/Applications
+      items:
+        - uuid: 01a34a43606c4c42bb5a9334ac682f49
+          name: 'Wavelog Active Users'
+          key: 'wavelog.active_users[{$DB_USER},{$DB_PASS},{$DB_NAME},{$ACTIVE_THRESHOLD}]'
+          value_type: FLOAT
+        - uuid: 24b464ccbe8b45edbb01f6771be11629
+          name: 'Wavelog Application Version'
+          key: 'wavelog.app_version[{$DB_USER},{$DB_PASS},{$DB_NAME}]'
+          value_type: TEXT
+        - uuid: 108ae29f699242b381f0fc17dadf8644
+          name: 'Wavelog Latest Release (available Version)'
+          key: 'wavelog.avail_version[{$DB_USER},{$DB_PASS},{$DB_NAME}]'
+          delay: 1h
+          value_type: TEXT
+          description: 'Fetched from database. Requires the Cronjob to run'
+        - uuid: 62c155e8bfef44a8a97fb38316e9a1e0
+          name: 'Wavelog Migrations Version'
+          key: 'wavelog.mig_version[{$DB_USER},{$DB_PASS},{$DB_NAME}]'
+          value_type: TEXT
+        - uuid: d75593efd61c4690a82284ce8745a336
+          name: 'Wavelog Total Clubstations on instance'
+          key: 'wavelog.total_clubstations[{$DB_USER},{$DB_PASS},{$DB_NAME}]'
+          value_type: FLOAT
+        - uuid: 2c92a471515f491d9c7bc048d6fb20a5
+          name: 'Wavelog Total Station Locations on instance'
+          key: 'wavelog.total_locations[{$DB_USER},{$DB_PASS},{$DB_NAME}]'
+          value_type: FLOAT
+        - uuid: abd125a963e545a3b98421576d4dc857
+          name: 'Wavelog Total Station Logbooks on instance'
+          key: 'wavelog.total_logbooks[{$DB_USER},{$DB_PASS},{$DB_NAME}]'
+          value_type: FLOAT
+        - uuid: ee76c4bd18154fa3a915a504600695f7
+          name: 'Wavelog Total QSOs on Instance'
+          key: 'wavelog.total_qsos[{$DB_USER},{$DB_PASS},{$DB_NAME},{$QSO_TABLE}]'
+          value_type: FLOAT
+        - uuid: 12ca0254cc044b568595e9b9845f6818
+          name: 'Wavelog Total Users on instance'
+          key: 'wavelog.total_users[{$DB_USER},{$DB_PASS},{$DB_NAME}]'
+          value_type: FLOAT
+      tags:
+        - tag: application
+          value: wavelog
+      macros:
+        - macro: '{$ACTIVE_THRESHOLD}'
+          value: '3'
+          description: 'Defines the threshold of how long an user is seen as active. In Minutes.'
+        - macro: '{$DB_HOST}'
+          value: localhost
+          description: 'Use the hostname which the zabbix-agent requires. Usually it''s localhost as the zabbix-agent is on the same host as Wavelog.'
+        - macro: '{$DB_NAME}'
+          value: wavelog
+          description: 'Name of the database.'
+        - macro: '{$DB_PASS}'
+          value: your_secret_password
+          description: 'Password for the database user.'
+        - macro: '{$DB_USER}'
+          value: zabbix
+          description: 'User which can read values from the database. Check out documentation for required tables and columns.'
+        - macro: '{$QSO_TABLE}'
+          value: TABLE_HRD_CONTACTS_V01
+          description: 'Usually TABLE_HRD_CONTACTS_V01, but can be renamed. Leave default if unchanged'

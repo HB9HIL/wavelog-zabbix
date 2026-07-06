@@ -58,8 +58,8 @@ zabbix_export:
               value: wavelog
           triggers:
             - uuid: c17d3e746ed04b438f6ffe3819c25f8a
-              expression: 'now() - last(/Wavelog by Zabbix agent2/wavelog.mastercron.last_run[{$DB_USER},{$DB_PASS},{$DB_NAME}]) > 180'
-              name: 'Wavelog: Mastercron did not run for 3 Minutes'
+              expression: 'now() - last(/Wavelog by Zabbix agent2/wavelog.mastercron.last_run[{$DB_USER},{$DB_PASS},{$DB_NAME}]) > 600'
+              name: 'Wavelog: Mastercron did not run for 10 Minutes'
               priority: HIGH
               manual_close: 'YES'
         - uuid: 62c155e8bfef44a8a97fb38316e9a1e0
@@ -244,7 +244,7 @@ zabbix_export:
                   value: wavelog
               trigger_prototypes:
                 - uuid: 3d73f23751e947e3952d58f252e15a00
-                  expression: 'change(/Wavelog by Zabbix agent2/wavelog.user.callsign[{$DB_USER},{$DB_PASS},{$DB_NAME},{#USER_ID}])=0'
+                  expression: 'change(/Wavelog by Zabbix agent2/wavelog.user.callsign[{$DB_USER},{$DB_PASS},{$DB_NAME},{#USER_ID}])=1'
                   name: 'User [{#USER_NAME}] changed his callsign'
                   priority: INFO
                   manual_close: 'YES'
@@ -291,6 +291,109 @@ zabbix_export:
               tags:
                 - tag: application
                   value: wavelog
+        - uuid: 1ea24cbd7ec642d5af5b1977178940de
+          name: 'Worker Discovery'
+          key: wavelog.worker.discovery
+          delay: 1h
+          item_prototypes:
+            - uuid: 42e1171d1fc242b6b6147a6dfae84632
+              name: 'Wavelog Worker Connected Clients'
+              type: DEPENDENT
+              key: 'wavelog.worker.clients[{#SINGLETON}]'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.connected_clients
+              master_item:
+                key: 'wavelog.worker.status[{#SINGLETON}]'
+              tags:
+                - tag: application
+                  value: wavelog
+            - uuid: 39935666cde6468192e3076f00fc6b2b
+              name: 'Wavelog Worker Status (raw)'
+              key: 'wavelog.worker.status[{#SINGLETON}]'
+              value_type: TEXT
+              tags:
+                - tag: application
+                  value: wavelog
+            - uuid: a036b5fe9a9d4b5bbfcca0e6fb7cf544
+              name: 'Wavelog Worker Active Topics'
+              type: DEPENDENT
+              key: 'wavelog.worker.topics.active[{#SINGLETON}]'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.active_topics
+              master_item:
+                key: 'wavelog.worker.status[{#SINGLETON}]'
+              tags:
+                - tag: application
+                  value: wavelog
+            - uuid: 92e993f938264aaf8494f932d87c889a
+              name: 'Wavelog Worker Registered Topics'
+              type: DEPENDENT
+              key: 'wavelog.worker.topics.registered[{#SINGLETON}]'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.registered_topics
+              master_item:
+                key: 'wavelog.worker.status[{#SINGLETON}]'
+              tags:
+                - tag: application
+                  value: wavelog
+            - uuid: c2c15cc33dbe4153a72ed1bd0766c801
+              name: 'Wavelog Worker Status'
+              type: DEPENDENT
+              key: 'wavelog.worker.up[{#SINGLETON}]'
+              value_type: CHAR
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.status
+              master_item:
+                key: 'wavelog.worker.status[{#SINGLETON}]'
+              tags:
+                - tag: application
+                  value: wavelog
+              trigger_prototypes:
+                - uuid: c1376ff4a8f14fd7be1cef533352142e
+                  expression: 'last(/Wavelog by Zabbix agent2/wavelog.worker.up[{#SINGLETON}])<>"ok"'
+                  name: 'Wavelog Worker status not ok'
+                  priority: AVERAGE
+                  manual_close: 'YES'
+                - uuid: b97d31fc2e604bacbb2475b884dcf00d
+                  expression: 'nodata(/Wavelog by Zabbix agent2/wavelog.worker.up[{#SINGLETON}],3m)=1'
+                  name: 'Wavelog Worker unreachable'
+                  priority: HIGH
+            - uuid: 77d928a5f9cf44e29988038c34aa21de
+              name: 'Wavelog Worker Version'
+              type: DEPENDENT
+              key: 'wavelog.worker.version[{#SINGLETON}]'
+              value_type: CHAR
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.version
+              master_item:
+                key: 'wavelog.worker.status[{#SINGLETON}]'
+              tags:
+                - tag: application
+                  value: wavelog
+              trigger_prototypes:
+                - uuid: 2332e5d379e4477685a7b4f17190cf03
+                  expression: 'change(/Wavelog by Zabbix agent2/wavelog.worker.version[{#SINGLETON}])<>0'
+                  name: 'Wavelog Worker version changed'
+                  priority: INFO
+                  manual_close: 'YES'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  // Gate purely on the operator's declared intent, independent of reachability.
+                  return '{$WAVELOG_WORKER_ENABLED}' === '1'
+                      ? JSON.stringify([{ '{#SINGLETON}': '0' }])
+                      : '[]';
       tags:
         - tag: component
           value: wavelog
@@ -319,6 +422,15 @@ zabbix_export:
         - macro: '{$WAVELOG_PATH}'
           value: /var/www/html
           description: 'Webroot of Wavelog. Change to your needs'
+        - macro: '{$WAVELOG_WORKER_ENABLED}'
+          value: '0'
+          description: 'Default disabled as the Worker is optional'
+        - macro: '{$WAVELOG_WORKER_HOST}'
+          value: 127.0.0.1
+          description: 'Bind Address of the Worker'
+        - macro: '{$WAVELOG_WORKER_PORT}'
+          value: '9001'
+          description: 'Internal Port of the Wavelog Worker'
       valuemaps:
         - uuid: d7ab90e8d8dd45b4970a4bb2bb2269a0
           name: 'User Types'
@@ -331,7 +443,7 @@ zabbix_export:
     - uuid: de5cacc8f70948098bfe74279aff2848
       expression: 'last(/Wavelog by Zabbix agent2/wavelog.mig_version[{$DB_USER},{$DB_PASS},{$DB_NAME}])<last(/Wavelog by Zabbix agent2/wavelog.mig_version_file[{$WAVELOG_PATH}])'
       name: 'Wavelog: Migration failed'
-      priority: DISASTER
+      priority: HIGH
       description: 'Either the Migration did not run yet (just open any page in Wavelog to fix) or the Migration failed for any reason. Check the Debug Page'
     - uuid: 12a117aa227448a3889fb39731b80c61
       expression: 'last(/Wavelog by Zabbix agent2/wavelog.app_version[{$DB_USER},{$DB_PASS},{$DB_NAME}])<>last(/Wavelog by Zabbix agent2/wavelog.avail_version[{$DB_USER},{$DB_PASS},{$DB_NAME}])'

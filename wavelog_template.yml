@@ -319,6 +319,7 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - $.connected_clients
+                  error_handler: DISCARD_VALUE
               master_item:
                 key: 'wavelog.worker.status[{$WAVELOG_WORKER_HOST},{$WAVELOG_WORKER_PORT},{$WAVELOG_WORKER_SECRET},{#SINGLETON}]'
               tags:
@@ -339,6 +340,7 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - $.active_topics
+                  error_handler: DISCARD_VALUE
               master_item:
                 key: 'wavelog.worker.status[{$WAVELOG_WORKER_HOST},{$WAVELOG_WORKER_PORT},{$WAVELOG_WORKER_SECRET},{#SINGLETON}]'
               tags:
@@ -352,6 +354,7 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - $.registered_topics
+                  error_handler: DISCARD_VALUE
               master_item:
                 key: 'wavelog.worker.status[{$WAVELOG_WORKER_HOST},{$WAVELOG_WORKER_PORT},{$WAVELOG_WORKER_SECRET},{#SINGLETON}]'
               tags:
@@ -390,6 +393,7 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - $.version
+                  error_handler: DISCARD_VALUE
               master_item:
                 key: 'wavelog.worker.status[{$WAVELOG_WORKER_HOST},{$WAVELOG_WORKER_PORT},{$WAVELOG_WORKER_SECRET},{#SINGLETON}]'
               tags:

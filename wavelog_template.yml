@@ -15,14 +15,14 @@ zabbix_export:
       items:
         - uuid: 01a34a43606c4c42bb5a9334ac682f49
           name: 'Active Users'
-          key: 'wavelog.active_users[{$DB_USER},{$DB_PASS},{$DB_NAME},{$ACTIVE_THRESHOLD}]'
+          key: 'wavelog.active_users[{$DB_NAME},{$ACTIVE_THRESHOLD}]'
           value_type: FLOAT
           tags:
             - tag: application
               value: wavelog
         - uuid: 24b464ccbe8b45edbb01f6771be11629
           name: 'Application Version'
-          key: 'wavelog.app_version[{$DB_USER},{$DB_PASS},{$DB_NAME}]'
+          key: 'wavelog.app_version[{$DB_NAME}]'
           delay: 5m
           value_type: TEXT
           tags:
@@ -30,13 +30,13 @@ zabbix_export:
               value: wavelog
           triggers:
             - uuid: 4b438f5fc1ac439f9c9d1860a9253393
-              expression: 'change(/Wavelog by Zabbix agent2/wavelog.app_version[{$DB_USER},{$DB_PASS},{$DB_NAME}])<>0'
+              expression: 'change(/Wavelog by Zabbix agent2/wavelog.app_version[{$DB_NAME}])<>0'
               name: 'Wavelog: Version has changed'
               priority: INFO
               manual_close: 'YES'
         - uuid: 108ae29f699242b381f0fc17dadf8644
           name: 'Latest Release (available Version)'
-          key: 'wavelog.avail_version[{$DB_USER},{$DB_PASS},{$DB_NAME}]'
+          key: 'wavelog.avail_version[{$DB_NAME}]'
           delay: 1h
           value_type: TEXT
           description: 'Fetched from database. Requires the Cronjob to run'
@@ -45,7 +45,7 @@ zabbix_export:
               value: wavelog
         - uuid: 0a5469f43c9f424393006a3a0ff04743
           name: 'Mastercron Last Run'
-          key: 'wavelog.mastercron.last_run[{$DB_USER},{$DB_PASS},{$DB_NAME}]'
+          key: 'wavelog.mastercron.last_run[{$DB_NAME}]'
           units: unixtime
           preprocessing:
             - type: JAVASCRIPT
@@ -58,13 +58,13 @@ zabbix_export:
               value: wavelog
           triggers:
             - uuid: c17d3e746ed04b438f6ffe3819c25f8a
-              expression: 'now() - last(/Wavelog by Zabbix agent2/wavelog.mastercron.last_run[{$DB_USER},{$DB_PASS},{$DB_NAME}]) > 600'
+              expression: 'now() - last(/Wavelog by Zabbix agent2/wavelog.mastercron.last_run[{$DB_NAME}]) > 600'
               name: 'Wavelog: Mastercron did not run for 10 Minutes'
               priority: HIGH
               manual_close: 'YES'
         - uuid: 62c155e8bfef44a8a97fb38316e9a1e0
           name: 'Migrations Version (DB)'
-          key: 'wavelog.mig_version[{$DB_USER},{$DB_PASS},{$DB_NAME}]'
+          key: 'wavelog.mig_version[{$DB_NAME}]'
           delay: 5m
           value_type: TEXT
           tags:
@@ -81,7 +81,7 @@ zabbix_export:
               value: wavelog
         - uuid: d75593efd61c4690a82284ce8745a336
           name: 'Total Clubstations on instance'
-          key: 'wavelog.total_clubstations[{$DB_USER},{$DB_PASS},{$DB_NAME}]'
+          key: 'wavelog.total_clubstations[{$DB_NAME}]'
           delay: 2m
           value_type: FLOAT
           tags:
@@ -89,7 +89,7 @@ zabbix_export:
               value: wavelog
         - uuid: 2c92a471515f491d9c7bc048d6fb20a5
           name: 'Total Station Locations on instance'
-          key: 'wavelog.total_locations[{$DB_USER},{$DB_PASS},{$DB_NAME}]'
+          key: 'wavelog.total_locations[{$DB_NAME}]'
           delay: 5m
           value_type: FLOAT
           tags:
@@ -97,7 +97,7 @@ zabbix_export:
               value: wavelog
         - uuid: abd125a963e545a3b98421576d4dc857
           name: 'Total Station Logbooks on instance'
-          key: 'wavelog.total_logbooks[{$DB_USER},{$DB_PASS},{$DB_NAME}]'
+          key: 'wavelog.total_logbooks[{$DB_NAME}]'
           delay: 5m
           value_type: FLOAT
           tags:
@@ -105,7 +105,7 @@ zabbix_export:
               value: wavelog
         - uuid: ee76c4bd18154fa3a915a504600695f7
           name: 'Total QSOs on Instance'
-          key: 'wavelog.total_qsos[{$DB_USER},{$DB_PASS},{$DB_NAME},{$QSO_TABLE}]'
+          key: 'wavelog.total_qsos[{$DB_NAME},{$QSO_TABLE}]'
           value_type: FLOAT
           units: '!'
           tags:
@@ -113,7 +113,7 @@ zabbix_export:
               value: wavelog
         - uuid: 12ca0254cc044b568595e9b9845f6818
           name: 'Total Users on instance'
-          key: 'wavelog.total_users[{$DB_USER},{$DB_PASS},{$DB_NAME}]'
+          key: 'wavelog.total_users[{$DB_NAME}]'
           delay: 2m
           value_type: FLOAT
           tags:
@@ -122,12 +122,12 @@ zabbix_export:
       discovery_rules:
         - uuid: 53efd2fd3e40459494fdeed700f94539
           name: 'Hardware Interfaces Discovery'
-          key: 'wavelog.cat.discovery[{$DB_USER},{$DB_PASS},{$DB_NAME}]'
+          key: 'wavelog.cat.discovery[{$DB_NAME}]'
           delay: 1h
           item_prototypes:
             - uuid: 4df59c1f59954a4ca4d4e833d275b1ff
               name: 'CAT Interface [{#CAT_ID}/{#CAT_RADIO}] Frequency'
-              key: 'wavelog.cat.frequency[{$DB_USER},{$DB_PASS},{$DB_NAME},{#CAT_ID}]'
+              key: 'wavelog.cat.frequency[{$DB_NAME},{#CAT_ID}]'
               value_type: FLOAT
               units: Hz
               tags:
@@ -135,7 +135,7 @@ zabbix_export:
                   value: wavelog
             - uuid: 8ee28d83decc4bba808e2363d2e6d110
               name: 'CAT Interface [{#CAT_ID}/{#CAT_RADIO}] Last used'
-              key: 'wavelog.cat.last_modified[{$DB_USER},{$DB_PASS},{$DB_NAME},{#CAT_ID}]'
+              key: 'wavelog.cat.last_modified[{$DB_NAME},{#CAT_ID}]'
               units: unixtime
               preprocessing:
                 - type: JAVASCRIPT
@@ -148,21 +148,21 @@ zabbix_export:
                   value: wavelog
             - uuid: 0212bac371fc46f6b874cdb97c833db0
               name: 'CAT Interface [{#CAT_ID}/{#CAT_RADIO}] Mode'
-              key: 'wavelog.cat.mode[{$DB_USER},{$DB_PASS},{$DB_NAME},{#CAT_ID}]'
+              key: 'wavelog.cat.mode[{$DB_NAME},{#CAT_ID}]'
               value_type: TEXT
               tags:
                 - tag: application
                   value: wavelog
             - uuid: cc8673bf2c9f4cbebfe124d49a8486ce
               name: 'CAT Interface [{#CAT_ID}/{#CAT_RADIO}] Operator'
-              key: 'wavelog.cat.operator[{$DB_USER},{$DB_PASS},{$DB_NAME},{#CAT_ID}]'
+              key: 'wavelog.cat.operator[{$DB_NAME},{#CAT_ID}]'
               value_type: TEXT
               tags:
                 - tag: application
                   value: wavelog
             - uuid: bc956c8dae0b4cecaf2d5c5080df9802
               name: 'CAT Interface [{#CAT_ID}/{#CAT_RADIO}] Power'
-              key: 'wavelog.cat.power[{$DB_USER},{$DB_PASS},{$DB_NAME},{#CAT_ID}]'
+              key: 'wavelog.cat.power[{$DB_NAME},{#CAT_ID}]'
               value_type: FLOAT
               trends: '0'
               units: W
@@ -171,7 +171,7 @@ zabbix_export:
                   value: wavelog
             - uuid: 018d006535fa4cbebf93bbf06960d838
               name: 'CAT Interface [{#CAT_ID}/{#CAT_RADIO}] User Account'
-              key: 'wavelog.cat.user[{$DB_USER},{$DB_PASS},{$DB_NAME},{#CAT_ID}]'
+              key: 'wavelog.cat.user[{$DB_NAME},{#CAT_ID}]'
               delay: 1h
               value_type: TEXT
               tags:
@@ -179,19 +179,19 @@ zabbix_export:
                   value: wavelog
         - uuid: 3e17512b0139467a9cfb17f7f3421f76
           name: 'Cronjobs Discovery'
-          key: 'wavelog.cron.discovery[{$DB_USER},{$DB_PASS},{$DB_NAME}]'
+          key: 'wavelog.cron.discovery[{$DB_NAME}]'
           delay: 1h
           item_prototypes:
             - uuid: 5065584f295e423786247cecbee4a15e
               name: 'Cronjob [{#CRON_ID}] Enabled'
-              key: 'wavelog.cron.enabled[{$DB_USER},{$DB_PASS},{$DB_NAME},{#CRON_ID}]'
+              key: 'wavelog.cron.enabled[{$DB_NAME},{#CRON_ID}]'
               value_type: TEXT
               tags:
                 - tag: application
                   value: wavelog
             - uuid: 4e3d4165a566469d84d86e7ec655f2b1
               name: 'Cronjob [{#CRON_ID}] Last Run'
-              key: 'wavelog.cron.last_run[{$DB_USER},{$DB_PASS},{$DB_NAME},{#CRON_ID}]'
+              key: 'wavelog.cron.last_run[{$DB_NAME},{#CRON_ID}]'
               trends: '0'
               units: unixtime
               preprocessing:
@@ -205,7 +205,7 @@ zabbix_export:
                   value: wavelog
             - uuid: 0772905b864b4bc5a6cc02140594b64e
               name: 'Cronjob [{#CRON_ID}] Next Run'
-              key: 'wavelog.cron.next_run[{$DB_USER},{$DB_PASS},{$DB_NAME},{#CRON_ID}]'
+              key: 'wavelog.cron.next_run[{$DB_NAME},{#CRON_ID}]'
               trends: '0'
               units: unixtime
               preprocessing:
@@ -219,24 +219,24 @@ zabbix_export:
                   value: wavelog
             - uuid: 528aeb1cb59b49349625ba062583cdbb
               name: 'Cronjob [{#CRON_ID}] Status'
-              key: 'wavelog.cron.status[{$DB_USER},{$DB_PASS},{$DB_NAME},{#CRON_ID}]'
+              key: 'wavelog.cron.status[{$DB_NAME},{#CRON_ID}]'
               value_type: TEXT
               tags:
                 - tag: application
                   value: wavelog
           trigger_prototypes:
             - uuid: 4e625b31d11940f2b53ada6d26ae98db
-              expression: 'last(/Wavelog by Zabbix agent2/wavelog.cron.status[{$DB_USER},{$DB_PASS},{$DB_NAME},{#CRON_ID}])<>"healthy" and last(/Wavelog by Zabbix agent2/wavelog.cron.enabled[{$DB_USER},{$DB_PASS},{$DB_NAME},{#CRON_ID}])=1'
+              expression: 'last(/Wavelog by Zabbix agent2/wavelog.cron.status[{$DB_NAME},{#CRON_ID}])<>"healthy" and last(/Wavelog by Zabbix agent2/wavelog.cron.enabled[{$DB_NAME},{#CRON_ID}])=1'
               name: 'Cronjob [{#CRON_ID}] not healthy'
               priority: HIGH
         - uuid: 54536a2b33044c06bbd18eef1a33bff2
           name: 'Users Discovery'
-          key: 'wavelog.user.discovery[{$DB_USER},{$DB_PASS},{$DB_NAME}]'
+          key: 'wavelog.user.discovery[{$DB_NAME}]'
           delay: 1h
           item_prototypes:
             - uuid: 11a87ce4253241f087782278e20d0d7a
               name: 'User [{#USER_NAME}] Callsign'
-              key: 'wavelog.user.callsign[{$DB_USER},{$DB_PASS},{$DB_NAME},{#USER_ID}]'
+              key: 'wavelog.user.callsign[{$DB_NAME},{#USER_ID}]'
               delay: 10m
               value_type: TEXT
               tags:
@@ -244,13 +244,13 @@ zabbix_export:
                   value: wavelog
               trigger_prototypes:
                 - uuid: 3d73f23751e947e3952d58f252e15a00
-                  expression: 'change(/Wavelog by Zabbix agent2/wavelog.user.callsign[{$DB_USER},{$DB_PASS},{$DB_NAME},{#USER_ID}])=1'
+                  expression: 'change(/Wavelog by Zabbix agent2/wavelog.user.callsign[{$DB_NAME},{#USER_ID}])=1'
                   name: 'User [{#USER_NAME}] changed his callsign'
                   priority: INFO
                   manual_close: 'YES'
             - uuid: a8eb8c885f9348f0b0c5e576a9071e9c
               name: 'User [{#USER_NAME}] E-Mail Address'
-              key: 'wavelog.user.email[{$DB_USER},{$DB_PASS},{$DB_NAME},{#USER_ID}]'
+              key: 'wavelog.user.email[{$DB_NAME},{#USER_ID}]'
               delay: 10m
               value_type: TEXT
               tags:
@@ -258,7 +258,7 @@ zabbix_export:
                   value: wavelog
             - uuid: 3a1ee52dfb9c418c823a6afbe0110cf3
               name: 'User [{#USER_NAME}] Last Seen'
-              key: 'wavelog.user.last_seen[{$DB_USER},{$DB_PASS},{$DB_NAME},{#USER_ID}]'
+              key: 'wavelog.user.last_seen[{$DB_NAME},{#USER_ID}]'
               units: unixtime
               preprocessing:
                 - type: JAVASCRIPT
@@ -271,19 +271,19 @@ zabbix_export:
                   value: wavelog
             - uuid: 9518e5dedde34b55947ff098623aa11c
               name: 'User [{#USER_NAME}] Login Attempts'
-              key: 'wavelog.user.login_attempts[{$DB_USER},{$DB_PASS},{$DB_NAME},{#USER_ID}]'
+              key: 'wavelog.user.login_attempts[{$DB_NAME},{#USER_ID}]'
               value_type: FLOAT
               tags:
                 - tag: application
                   value: wavelog
               trigger_prototypes:
                 - uuid: 4ae59a9f68a846acafdcd1aa53b2bc35
-                  expression: 'last(/Wavelog by Zabbix agent2/wavelog.user.login_attempts[{$DB_USER},{$DB_PASS},{$DB_NAME},{#USER_ID}])>={$MAX_LOGIN_ATTEMPTS}'
+                  expression: 'last(/Wavelog by Zabbix agent2/wavelog.user.login_attempts[{$DB_NAME},{#USER_ID}])>={$MAX_LOGIN_ATTEMPTS}'
                   name: 'User [{#USER_NAME}] has {$MAX_LOGIN_ATTEMPTS} failed login attempts'
                   priority: AVERAGE
             - uuid: e9d62b737ca746c98ee89483b8bc3753
               name: 'User [{#USER_NAME}] User Type'
-              key: 'wavelog.user.type[{$DB_USER},{$DB_PASS},{$DB_NAME},{#USER_ID}]'
+              key: 'wavelog.user.type[{$DB_NAME},{#USER_ID}]'
               delay: 10m
               trends: '0'
               valuemap:
@@ -401,18 +401,9 @@ zabbix_export:
         - macro: '{$ACTIVE_THRESHOLD}'
           value: '3'
           description: 'Defines the threshold of how long an user is seen as active. In Minutes.'
-        - macro: '{$DB_HOST}'
-          value: localhost
-          description: 'Use the hostname which the zabbix-agent requires. Usually it''s localhost as the zabbix-agent is on the same host as Wavelog.'
         - macro: '{$DB_NAME}'
           value: wavelog
-          description: 'Name of the database.'
-        - macro: '{$DB_PASS}'
-          value: your_secret_password
-          description: 'Password for the database user.'
-        - macro: '{$DB_USER}'
-          value: zabbix
-          description: 'User which can read values from the database. Check out documentation for required tables and columns.'
+          description: 'Name of the database. Credentials and host are read from the mysql defaults file (see README).'
         - macro: '{$MAX_LOGIN_ATTEMPTS}'
           value: '3'
           description: 'How many failed login attempts. Keep in sync with config value in config.php (check sample config if you don''t find it)'
@@ -441,12 +432,12 @@ zabbix_export:
               newvalue: admin
   triggers:
     - uuid: de5cacc8f70948098bfe74279aff2848
-      expression: 'last(/Wavelog by Zabbix agent2/wavelog.mig_version[{$DB_USER},{$DB_PASS},{$DB_NAME}])<last(/Wavelog by Zabbix agent2/wavelog.mig_version_file[{$WAVELOG_PATH}])'
+      expression: 'last(/Wavelog by Zabbix agent2/wavelog.mig_version[{$DB_NAME}])<last(/Wavelog by Zabbix agent2/wavelog.mig_version_file[{$WAVELOG_PATH}])'
       name: 'Wavelog: Migration failed'
       priority: HIGH
       description: 'Either the Migration did not run yet (just open any page in Wavelog to fix) or the Migration failed for any reason. Check the Debug Page'
     - uuid: 12a117aa227448a3889fb39731b80c61
-      expression: 'last(/Wavelog by Zabbix agent2/wavelog.app_version[{$DB_USER},{$DB_PASS},{$DB_NAME}])<>last(/Wavelog by Zabbix agent2/wavelog.avail_version[{$DB_USER},{$DB_PASS},{$DB_NAME}])'
+      expression: 'last(/Wavelog by Zabbix agent2/wavelog.app_version[{$DB_NAME}])<>last(/Wavelog by Zabbix agent2/wavelog.avail_version[{$DB_NAME}])'
       name: 'Wavelog: New Version Available'
       priority: INFO
       description: 'There is a new Wavelog Version available. Update the Wavelog Instance to get new features and bug fixes'

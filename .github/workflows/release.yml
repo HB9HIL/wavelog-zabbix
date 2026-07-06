@@ -1,0 +1,30 @@
+name: Release
+
+# Publish a GitHub release with the template and config files whenever a
+# version tag (e.g. v1.0.0) is pushed.
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # gh is pre-installed on GitHub-hosted runners; no extra action needed.
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes \
+            wavelog_template.yml \
+            userparams.d/wavelog.conf \
+            permissions.sql \
+            my.cnf.sample

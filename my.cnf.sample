@@ -1,7 +1,0 @@
-# Sample mysql defaults file for the Zabbix agent.
-# Install as /etc/zabbix/.my.cnf, owned by the agent user, mode 0600.
-# The password never appears on the command line this way.
-[client]
-user = zabbix
-password = secure_password
-host = localhost

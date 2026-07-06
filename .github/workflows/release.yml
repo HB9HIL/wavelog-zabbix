@@ -26,5 +26,4 @@ jobs:
             --generate-notes \
             wavelog_template.yml \
             userparams.d/wavelog.conf \
-            permissions.sql \
-            my.cnf.sample
+            permissions.sql
